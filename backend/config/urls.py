@@ -26,14 +26,29 @@ urlpatterns = [
     path('api/', include('api.urls')),
 ]
 
+API_TAGS = [
+    {'name': 'health', 'description': 'Service health checks'},
+    {'name': 'ingestion', 'description': 'Claim ingestion endpoints'},
+    {'name': 'claims', 'description': 'Claim browsing and detail'},
+    {'name': 'rules', 'description': 'Rules configuration (CRUD)'},
+    {'name': 'scoring', 'description': 'Rules-based scoring operations'},
+    {'name': 'queue', 'description': 'Investigation queue views'},
+    {'name': 'investigators', 'description': 'Investigator directory'},
+    {'name': 'cases', 'description': 'Case management'},
+    {'name': 'assignments', 'description': 'Claim assignments to investigators'},
+    {'name': 'relationships', 'description': 'Network/relationship graph building blocks'},
+    {'name': 'outcomes', 'description': 'Investigation outcomes'},
+    {'name': 'analytics', 'description': 'Analytics for dashboards'},
+]
 schema_view = get_schema_view(
    openapi.Info(
-      title="My API",
+      title="Insurance Fraud Detection API",
       default_version='v1',
-      description="Test description",
+      description="Backend API for claim ingestion, rules-based scoring, investigator queue, assignments/cases, network relationships, outcomes, and analytics.",
    ),
    public=True,
    permission_classes=(permissions.AllowAny,),
+   tags=API_TAGS,
 )
 
 def get_full_url(request):
@@ -51,12 +66,13 @@ def dynamic_schema_view(request, *args, **kwargs):
     url = get_full_url(request)
     view = get_schema_view(
         openapi.Info(
-            title="My API",
+            title="Insurance Fraud Detection API",
             default_version='v1',
-            description="API Docs",
+            description="Backend API for claim ingestion, rules-based scoring, investigator queue, assignments/cases, network relationships, outcomes, and analytics.",
         ),
         public=True,
         url=url,
+        patterns=urlpatterns,
     )
     return view.with_ui('swagger', cache_timeout=0)(request)
 
