@@ -13,6 +13,18 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 
+# Use pure-Python MySQL driver (PyMySQL) to avoid native mysqlclient build dependencies.
+# This enables MySQL connectivity in constrained build environments.
+try:
+    import pymysql  # type: ignore
+
+    pymysql.install_as_MySQLdb()
+except Exception:
+    # If PyMySQL isn't installed, Django will surface an ImproperlyConfigured error
+    # when MySQL is selected. SQLite fallback remains available when MYSQL_* env vars
+    # are absent.
+    pass
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
