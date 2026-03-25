@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import os
 from pathlib import Path
+from urllib.parse import urlparse
 
 # Use pure-Python MySQL driver (PyMySQL) to avoid native mysqlclient build dependencies.
 # This enables MySQL connectivity in constrained build environments.
@@ -108,6 +109,22 @@ MYSQL_USER = os.getenv('MYSQL_USER')
 MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD')
 MYSQL_DB = os.getenv('MYSQL_DB')
 MYSQL_PORT = os.getenv('MYSQL_PORT')
+
+# Support both styles:
+#  1) MYSQL_URL=hostname (preferred, with MYSQL_PORT/MYSQL_DB set separately)
+#  2) MYSQL_URL=mysql://user:pass@hostname:port/dbname  (common in preview envs)
+if MYSQL_HOST and MYSQL_HOST.startswith('mysql://'):
+    parsed = urlparse(MYSQL_HOST)
+    # Only fill values that are missing to preserve explicit MYSQL_* overrides.
+    MYSQL_HOST = parsed.hostname or MYSQL_HOST
+    if not MYSQL_PORT and parsed.port:
+        MYSQL_PORT = str(parsed.port)
+    if not MYSQL_DB and parsed.path and parsed.path != '/':
+        MYSQL_DB = parsed.path.lstrip('/')
+    if not MYSQL_USER and parsed.username:
+        MYSQL_USER = parsed.username
+    if not MYSQL_PASSWORD and parsed.password:
+        MYSQL_PASSWORD = parsed.password
 
 if MYSQL_HOST and MYSQL_USER and MYSQL_PASSWORD and MYSQL_DB and MYSQL_PORT:
     DATABASES = {

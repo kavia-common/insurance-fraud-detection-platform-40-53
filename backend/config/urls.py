@@ -45,10 +45,12 @@ schema_view = get_schema_view(
       title="Insurance Fraud Detection API",
       default_version='v1',
       description="Backend API for claim ingestion, rules-based scoring, investigator queue, assignments/cases, network relationships, outcomes, and analytics.",
+      # drf-yasg does not accept `tags=` in get_schema_view for some versions;
+      # instead, declare tags in the OpenAPI Info object.
+      tags=API_TAGS,
    ),
    public=True,
    permission_classes=(permissions.AllowAny,),
-   tags=API_TAGS,
 )
 
 def get_full_url(request):
